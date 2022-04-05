@@ -7,20 +7,23 @@ services:
   site:
     build:
       context: ./dockerfiles
-      dockerfile: nginx.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
-    container_name: nginx
+      dockerfile: apache.dockerfile
+    container_name: apache
     ports:
-      - 80:80
+      - 8080:80
+      - 8443:443
+    restart: always
+    environment:
+      APP_FQDN: ${APP_FQDN}
     volumes:
-      - ./src:/var/www/html:delegated
+      - ./:/var/www/html:delegated
+      - ./dockerfiles/apache/logs:/var/log/apache2/
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
+      - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - php
-      - redis
       - mysql
-      - mailhog
+      - nginx
     networks:
       - laravel
 
@@ -32,10 +35,10 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     networks:
@@ -50,16 +53,7 @@ services:
         - GID=${GID:-1000}
     container_name: php
     volumes:
-      - ./src:/var/www/html:delegated
-    networks:
-      - laravel
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - 6379:6379
+      - ./:/var/www/html:delegated
     networks:
       - laravel
 
@@ -72,7 +66,7 @@ services:
         - GID=${GID:-1000}
     container_name: composer
     volumes:
-      - ./src:/var/www/html
+      - ./:/var/www/html
     working_dir: /var/www/html
     depends_on:
       - php
@@ -82,10 +76,11 @@ services:
       - laravel
 
   npm:
-    image: node:13.7
+    image: node:latest
     container_name: npm
     volumes:
-      - ./src:/var/www/html
+      - ./:/var/www/html
+      - ./storage/mysql:/var/lib/mysql
     ports:
       - 3000:3000
       - 3001:3001
@@ -103,13 +98,42 @@ services:
         - GID=${GID:-1000}
     container_name: artisan
     volumes:
-      - ./src:/var/www/html:delegated
+      - ./:/var/www/html:delegated
     depends_on:
       - mysql
     working_dir: /var/www/html
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
       - laravel
+
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    environment:
+      APP_FQDN: ${APP_FQDN}
+    volumes:
+      - ./:/var/www/html:delegated
+      - ./dockerfiles/nginx/logs:/var/log/nginx
+      - ./dockerfiles/nginx/templates/:/etc/nginx/templates
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - laravel
+
+  certbot:
+     image: certbot/certbot:latest
+     container_name: certbot
+     command: certonly --webroot --webroot-path=/var/www/html/public --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d ${APP_FQDN} -v
+     volumes:
+       - ./:/var/www/html:delegated
+       - /etc/letsencrypt/:/etc/letsencrypt/
+       - ./dockerfiles/certbot/logs/:/var/log/letsencrypt
+       - ./dockerfiles/certbot/data:/usr/share/nginx/html/letsencrypt
 
   mailhog:
     image: mailhog/mailhog:latest
