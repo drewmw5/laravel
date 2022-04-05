@@ -4,7 +4,7 @@ networks:
   laravel:
 
 services:
-  site:
+  apache:
     build:
       context: ./dockerfiles
       dockerfile: apache.dockerfile
@@ -21,9 +21,13 @@ services:
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
       - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
-      - php
       - mysql
+      - composer
+      - npm
+      - artisan
       - nginx
+      - certbot
+      - mailhog
     networks:
       - laravel
 
@@ -44,27 +48,12 @@ services:
     networks:
       - laravel
 
-  php:
-    build:
-      context: ./dockerfiles
-      dockerfile: php.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
-    container_name: php
-    volumes:
-      - ./:/var/www/html:delegated
-    networks:
-      - laravel
-
   composer:
     image: composer:latest
     container_name: composer
     volumes:
       - ./:/var/www/html
     working_dir: /var/www/html
-    depends_on:
-      - php
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
       - laravel
@@ -86,10 +75,7 @@ services:
   artisan:
     build:
       context: ./dockerfiles
-      dockerfile: php.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+      dockerfile: artisan.dockerfile
     container_name: artisan
     volumes:
       - ./:/var/www/html:delegated
@@ -99,7 +85,6 @@ services:
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
       - laravel
-
 
   nginx:
     image: nginx:latest
