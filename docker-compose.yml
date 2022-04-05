@@ -58,19 +58,13 @@ services:
       - laravel
 
   composer:
-    build:
-      context: ./dockerfiles
-      dockerfile: composer.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+    image: composer:latest
     container_name: composer
     volumes:
       - ./:/var/www/html
     working_dir: /var/www/html
     depends_on:
       - php
-    user: laravel
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
       - laravel
