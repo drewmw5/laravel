@@ -230,8 +230,7 @@ if [ $OPTIND -eq 1 ];
 then
   echo "No options were passed. Running fresh initialization"
   sleep 1
-  docker-compose pull \
-  && COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel \
+  COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel --pull --force-rm --no-cache \
   && docker-compose up -d --remove-orphans \
   && docker-compose run --rm composer update \
   && docker-compose run --rm npm cache clear --force \
