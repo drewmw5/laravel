@@ -187,6 +187,17 @@ MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 
 }
 
+confirm_env () {
+  # If .env doesn't exist...
+    if ! test -f "src/.env"; then
+      # If the user would like to make a new .env file
+      if confirm "Could not locate .env. Would you like to create a fresh one?"
+      then
+        fresh_env
+      fi
+    fi
+}
+
 artisan() {
   docker-compose run --rm artisan key:generate \
   && docker-compose run --rm artisan optimize \
@@ -227,18 +238,12 @@ if [ -z "$(ls -A ./src)" ]; then
     if confirm "Would you like to 'git clone' a Laravel project into ./src?"
     then
       read -p "URL of Laravel git repo: " repo
+      confirm_env
       git clone "$repo" src
       echo ""
     else
       mkdir src
-    # If .env doesn't exist...
-    if ! test -f "src/.env"; then
-      # If the user would like to make a new .env file
-      if confirm "Could not locate .env. Would you like to create a fresh one?"
-      then
-        fresh_env
-      fi
-    fi
+      confirm_env
   fi
 fi
 
