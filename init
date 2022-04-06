@@ -160,7 +160,7 @@ MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
             break
     done
     else
-    cp .env.example .env
+    cp .env.example src/.env
   fi
 
 }
@@ -190,7 +190,7 @@ docker() {
 }
 
  # If .env doesn't exist...
-if ! test -f ".env";
+if ! test -f "src/.env";
 then
     # If the user would like to make a new one
     if confirm "Could not locate .env. Would you like to create a fresh one?"
