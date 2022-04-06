@@ -87,7 +87,7 @@ fresh_env () {
       echo ""
 
       # App URL
-      read -e -p "What's your app's URL? (Default: ${LIGHTCYAN}http://localhost){$NOCOLOR} " app_url
+      read  -p "What's your app's URL? (Default: http://localhost) " app_url
       app_url=${app_url:-"http://localhost"}
       echo "$app_url"
       echo ""
@@ -179,7 +179,7 @@ PUSHER_APP_CLUSTER=mt1
 MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
 MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 " | tee src/.env
-            break
+    break
     done
     else
     cp .env.example src/.env
@@ -229,6 +229,7 @@ if [ -z "$(ls -A ./src)" ]; then
       read -p "URL of Laravel git repo: " repo
       git clone "$repo" src
       echo ""
+      break
     else
       mkdir src
     fi
