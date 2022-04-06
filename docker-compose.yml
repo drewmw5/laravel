@@ -127,6 +127,8 @@ services:
    image: phpmyadmin:fpm-alpine
    container_name: phpmyadmin
    restart: always
+   depends_on:
+     - mariadb
    ports:
     - 8000:80
    networks:
