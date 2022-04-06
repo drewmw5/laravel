@@ -13,7 +13,6 @@ COPY apache/apache2.conf /etc/apache2/apache2.conf
 COPY apache/vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY apache/vhost-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
-
 RUN a2ensite 000-default
 RUN a2ensite default-ssl
 
