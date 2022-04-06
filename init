@@ -199,7 +199,7 @@ then
     fi
 fi
 
-while getopts 'acdhinp' OPTION; do
+while getopts 'acdhinps' OPTION; do
   case "$OPTION" in
     a)
       echo "Detected artisan flag. Will run artisan commands"
@@ -227,20 +227,21 @@ while getopts 'acdhinp' OPTION; do
       echo "-h | Help flag.          | Display this message"
       echo "-i | Initialization flag | Run the initialization script"
       echo "-n | NPM flag.           | Install npm dependencies and execute npm run dev"
+      echo "-p | Production flag     | Run setup for production mode"
       echo "-s | Skip flag           | Skip docker commands"
       ;;
     i)
-      echo "Detected initialization flag. Will create default environment variables"
+      echo "Detected initialization flag.  Creating default environment variables"
       sleep 1
       init=1
       ;;
     n)
-      echo "Detected NPM flag. Will run npm install and npm run dev"
+      echo "Detected NPM flag. Running npm install and npm run dev"
       sleep 1
       npm=1
       ;;
     p)
-      echo "Detected Production flag. Will setup production environment"
+      echo "Detected Production flag.Setting up production environment"
       sleep 1
       prod=1
       ;;
