@@ -14,10 +14,12 @@ confirm () {
                 ;;
             [nN][oO]|[nN])
                 echo "No"
+                echo ""
                 return 1
                 ;;
             *)
                 echo "Invalid input..."
+                echo ""
                 ;;
         esac
     done
@@ -170,8 +172,8 @@ artisan() {
   && docker-compose run --rm artisan optimize \
   && docker-compose run --rm artisan storage:link \
   && docker-compose run --rm artisan migrate:fresh --seed \
-  && sudo chgrp -R www-data ./storage ./bootstrap/cache \
-  && sudo chmod -R ug+rwx ./storage ./bootstrap/cache
+  && sudo chgrp -R www-data storage bootstrap/cache \
+  && sudo chmod -R ug+rwx storage bootstrap/cache
 }
 
 composer() {
@@ -189,13 +191,24 @@ docker() {
   && docker-compose up -d
 }
 
- # If .env doesn't exist...
-if ! test -f "src/.env";
-then
-    # If the user would like to make a new one
-    if confirm "Could not locate .env. Would you like to create a fresh one?"
+# If ./src is empty
+if [ -z "$(ls -A ./src)" ]; then
+  echo ""
+  echo "It appears that ./src is empty!"
+  echo "Would you like to 'git clone' a Laravel project into ./src?"
+    if confirm
     then
-      fresh_env
+      read -p "URL of Laravel git repo: " repo
+      git clone "$repo" src
+      echo ""
+        # If .env doesn't exist...
+        if ! test -f ".env"; then
+            # If the user would like to make a new one
+            if confirm "Could not locate .env. Would you like to create a fresh one?"
+            then
+              fresh_env
+            fi
+        fi
     fi
 fi
 
@@ -203,17 +216,14 @@ while getopts 'acdhinps' OPTION; do
   case "$OPTION" in
     a)
       echo "Detected artisan flag. Will run artisan commands"
-      sleep 1
       artisan=1
       ;;
     c)
       echo "Detected composer flag. Will run composer update"
-      sleep 1
       composer=1
       ;;
     d)
       echo "Detected docker flag. Will pull, build, and restart containers"
-      sleep 1
       docker=1
       ;;
     h)
@@ -232,17 +242,14 @@ while getopts 'acdhinps' OPTION; do
       ;;
     i)
       echo "Detected initialization flag.  Creating default environment variables"
-      sleep 1
       init=1
       ;;
     n)
       echo "Detected NPM flag. Running npm install and npm run dev"
-      sleep 1
       npm=1
       ;;
     p)
       echo "Detected Production flag.Setting up production environment"
-      sleep 1
       prod=1
       ;;
     s)
@@ -258,14 +265,24 @@ while getopts 'acdhinps' OPTION; do
   esac
 done
 
+# Default option run
 if [ $OPTIND -eq 1 ];
 then
   echo "No options were passed. Running fresh initialization"
-  sleep 1
   docker
   composer
   npm
   artisan
+  echo "Done."
+  echo ""
+  echo "Please note that all further 'docker-compose' commands should be run from the 'src' directory to avoid any conflict with environment variables."
+  sleep 1
+  echo ""
+  echo "Navigating to 'src' directory"
+  echo ""
+  sleep 1
+  cd ./src
+  exec bash
 fi
 
 # Init flag
