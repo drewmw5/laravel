@@ -21,7 +21,7 @@ services:
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
       - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
-      - mysql
+      - mariadb
       - composer
       - npm
       - artisan
@@ -31,9 +31,9 @@ services:
     networks:
       - laravel
 
-  mysql:
+  mariadb:
     image: mariadb:latest
-    container_name: mysql
+    container_name: mariadb
     restart: unless-stopped
     tty: true
     ports:
@@ -80,7 +80,7 @@ services:
     volumes:
       - ./:/var/www/html:delegated
     depends_on:
-      - mysql
+      - mariadb
     working_dir: /var/www/html
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
