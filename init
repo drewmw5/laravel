@@ -22,9 +22,7 @@ WHITE='\033[1;37m'
 
 confirm () {
     while true; do
-        echo "$1"
-
-        read -r -p "[Y/n] " input
+        read -n 1 -r -p "[Y/n] " input
 
         case $input in
             [yY][eE][sS]|[yY])
