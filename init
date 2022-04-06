@@ -227,6 +227,7 @@ while getopts 'acdhinp' OPTION; do
       echo "-h | Help flag.          | Display this message"
       echo "-i | Initialization flag | Run the initialization script"
       echo "-n | NPM flag.           | Install npm dependencies and execute npm run dev"
+      echo "-s | Skip flag           | Skip docker commands"
       ;;
     i)
       echo "Detected initialization flag. Will create default environment variables"
@@ -242,6 +243,12 @@ while getopts 'acdhinp' OPTION; do
       echo "Detected Production flag. Will setup production environment"
       sleep 1
       prod=1
+      ;;
+    s)
+      echo "Detected Skip flag. Skipping running docker commands"
+      composer
+      npm
+      artisan
       ;;
     ?)
       echo "script usage: $(basename \$0) [-l] [-h] [-a somevalue]" >&2
