@@ -4,8 +4,6 @@ USER root
 
 WORKDIR /var/www/html
 
-RUN mkdir storage
-
 RUN docker-php-ext-install pdo_mysql \
     && docker-php-ext-enable pdo_mysql
 
