@@ -32,7 +32,7 @@ services:
       - laravel
 
   mysql:
-    image: mariadb:10.6
+    image: mariadb:latest
     container_name: mysql
     restart: unless-stopped
     tty: true
@@ -59,7 +59,7 @@ services:
       - laravel
 
   npm:
-    image: node:latest
+    image: node:lts-alpine
     container_name: npm
     volumes:
       - ./:/var/www/html
@@ -87,7 +87,7 @@ services:
       - laravel
 
   nginx:
-    image: nginx:latest
+    image: nginx:stable-alpine
     container_name: nginx
     restart: always
     environment:
@@ -124,7 +124,7 @@ services:
       - laravel
 
   phpmyadmin:
-   image: phpmyadmin
+   image: phpmyadmin:fpm-alpine
    container_name: phpmyadmin
    restart: always
    ports:
