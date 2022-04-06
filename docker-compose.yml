@@ -16,7 +16,7 @@ services:
     environment:
       APP_FQDN: ${APP_FQDN}
     volumes:
-      - ./:/var/www/html:delegated
+      - ./src/:/var/www/html:delegated
       - ./dockerfiles/apache/logs:/var/log/apache2/
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
       - /etc/letsencrypt/:/etc/letsencrypt/
@@ -52,7 +52,7 @@ services:
     image: composer:latest
     container_name: composer
     volumes:
-      - ./:/var/www/html
+      - ./src/:/var/www/html
     working_dir: /var/www/html
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
@@ -62,8 +62,8 @@ services:
     image: node:lts-alpine
     container_name: npm
     volumes:
-      - ./:/var/www/html
-      - ./storage/mysql:/var/lib/mysql
+      - ./src/:/var/www/html
+      - ./src/storage/mysql:/var/lib/mysql
     ports:
       - 3000:3000
       - 3001:3001
@@ -78,7 +78,7 @@ services:
       dockerfile: artisan.dockerfile
     container_name: artisan
     volumes:
-      - ./:/var/www/html:delegated
+      - ./src/:/var/www/html:delegated
     depends_on:
       - mariadb
     working_dir: /var/www/html
@@ -93,7 +93,7 @@ services:
     environment:
       APP_FQDN: ${APP_FQDN}
     volumes:
-      - ./:/var/www/html:delegated
+      - ./src:/var/www/html:delegated
       - ./dockerfiles/nginx/logs:/var/log/nginx
       - ./dockerfiles/nginx/templates/:/etc/nginx/templates
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
@@ -109,7 +109,7 @@ services:
      container_name: certbot
      command: certonly --webroot --webroot-path=/var/www/html/public --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d ${APP_FQDN} -v
      volumes:
-       - ./:/var/www/html:delegated
+       - ./src/:/var/www/html:delegated
        - /etc/letsencrypt/:/etc/letsencrypt/
        - ./dockerfiles/certbot/logs/:/var/log/letsencrypt
        - ./dockerfiles/certbot/data:/usr/share/nginx/html/letsencrypt
