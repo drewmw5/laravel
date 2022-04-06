@@ -22,16 +22,18 @@ WHITE='\033[1;37m'
 
 confirm () {
     while true; do
+        echo "$1"
+
         read -n 1 -r -p "[Y/n] " input
 
         case $input in
             [yY][eE][sS]|[yY])
-                echo "Yes"
+                echo "es"
                 echo ""
                 return 0
                 ;;
             [nN][oO]|[nN])
-                echo "No"
+                echo "o"
                 echo ""
                 return 1
                 ;;
@@ -48,7 +50,7 @@ fresh_env () {
   # Prompt for customization
   echo "Do you want to customize your environment variables?"
   echo ""
-  echo -e "If developing in a local environment (i.e. ${BLUE}localhost${NOCOLOR}),"
+  echo -e "If developing in a local environment (i.e. ${LIGHTCYAN}localhost${NOCOLOR}),"
   echo "then configuration is optional"
   if confirm
   then
@@ -85,7 +87,7 @@ fresh_env () {
       echo ""
 
       # App URL
-      read -p "What's your app's URL? (Default: http://localhost) " app_url
+      read -e -p "What's your app's URL? (Default: ${LIGHTCYAN}http://localhost){$NOCOLOR} " app_url
       app_url=${app_url:-"http://localhost"}
       echo "$app_url"
       echo ""
@@ -227,6 +229,8 @@ if [ -z "$(ls -A ./src)" ]; then
       read -p "URL of Laravel git repo: " repo
       git clone "$repo" src
       echo ""
+    else
+      mkdir src
     fi
     # If .env doesn't exist...
     if ! test -f ".env"; then
