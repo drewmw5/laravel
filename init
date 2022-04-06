@@ -229,10 +229,8 @@ if [ -z "$(ls -A ./src)" ]; then
       read -p "URL of Laravel git repo: " repo
       git clone "$repo" src
       echo ""
-      break
     else
       mkdir src
-    fi
     # If .env doesn't exist...
     if ! test -f ".env"; then
       # If the user would like to make a new .env file
@@ -241,6 +239,7 @@ if [ -z "$(ls -A ./src)" ]; then
         fresh_env
       fi
     fi
+  fi
 fi
 
 while getopts 'acdhinps' OPTION; do
