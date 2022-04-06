@@ -211,24 +211,32 @@ docker() {
   && docker-compose up -d
 }
 
+if [ -d "./src" ]; then
+  echo ""
+  echo "No src directory. Executing 'mkdir src'"
+  sleep 1
+  mkdir src
+  echo "Done!"
+  echo ""
+fi
+
 # If ./src is empty
 if [ -z "$(ls -A ./src)" ]; then
   echo ""
   echo "It appears that ./src is empty!"
-  echo "Would you like to 'git clone' a Laravel project into ./src?"
-    if confirm
+    if confirm "Would you like to 'git clone' a Laravel project into ./src?"
     then
       read -p "URL of Laravel git repo: " repo
       git clone "$repo" src
       echo ""
-        # If .env doesn't exist...
-        if ! test -f ".env"; then
-            # If the user would like to make a new one
-            if confirm "Could not locate .env. Would you like to create a fresh one?"
-            then
-              fresh_env
-            fi
-        fi
+    fi
+    # If .env doesn't exist...
+    if ! test -f ".env"; then
+      # If the user would like to make a new .env file
+      if confirm "Could not locate .env. Would you like to create a fresh one?"
+      then
+        fresh_env
+      fi
     fi
 fi
 
