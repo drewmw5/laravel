@@ -232,7 +232,7 @@ if [ -z "$(ls -A ./src)" ]; then
     else
       mkdir src
     # If .env doesn't exist...
-    if ! test -f ".env"; then
+    if ! test -f "src/.env"; then
       # If the user would like to make a new .env file
       if confirm "Could not locate .env. Would you like to create a fresh one?"
       then
