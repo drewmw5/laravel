@@ -334,17 +334,17 @@ fi
 # Composer commands
 if [[ composer -eq 1 ]]
 then
-  composer
+  cd src && composer
 fi
 
 # NPM commands
 if [[ npm -eq 1 ]]
 then
-  npm
+  cd src && npm
 fi
 
 # Artisan commands
 if [[ artisan -eq 1 ]]
 then
-  artisan
+  cd src && artisan
 fi
