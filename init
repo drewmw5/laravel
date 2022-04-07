@@ -193,7 +193,7 @@ confirm_env () {
       # If the user would like to make a new .env file
       echo ""
       echo ""
-      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to copy from .env.example?"
+      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to create a fresh one?${NOCOLOR}"
       then
         fresh_env
       fi
