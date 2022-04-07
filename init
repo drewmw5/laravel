@@ -22,7 +22,7 @@ WHITE='\033[1;37m'
 
 confirm () {
     while true; do
-        echo "$1"
+        echo -e "$1"
 
         read -n 1 -r -p "[Y/n] " input
 
@@ -193,7 +193,7 @@ confirm_env () {
       # If the user would like to make a new .env file
       echo ""
       echo ""
-      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to create a fresh one?"
+      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to copy from .env.example?"
       then
         fresh_env
       fi
