@@ -191,7 +191,9 @@ confirm_env () {
   # If .env doesn't exist...
     if ! test -f "src/.env"; then
       # If the user would like to make a new .env file
-      if confirm "Could not locate ./src/.env. Would you like to create a fresh one?"
+      echo ""
+      echo ""
+      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to create a fresh one?"
       then
         fresh_env
       fi
