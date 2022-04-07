@@ -218,7 +218,8 @@ npm() {
 }
 
 docker() {
-  cd src && COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel --pull --force-rm --no-cache \
+  cd src && docker-compose down --rmi 'local' -v
+  COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel --pull --force-rm --no-cache \
   && docker-compose up -d
 }
 
