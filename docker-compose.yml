@@ -45,6 +45,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+    volumes:
+      - ./src/storage/mysql/:/var/lib/mysql
     networks:
       - laravel
 
