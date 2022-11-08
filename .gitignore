@@ -1,2 +1,4 @@
 dockerfiles/*/logs/*
 src/*
+.env
+/.vscode
