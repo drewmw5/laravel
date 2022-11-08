@@ -64,11 +64,13 @@ services:
     image: node:lts-alpine
     container_name: npm
     volumes:
-      - ./src/:/var/www/html
+      - ./src/:/var/www/html:delegated
       - ./src/storage/mysql:/var/lib/mysql
+      - ./dockerfiles/localhost/:/var/www/certs
     ports:
       - 3000:3000
       - 3001:3001
+      - 5173:5173
     working_dir: /var/www/html
     entrypoint: ['npm']
     networks:
