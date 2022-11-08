@@ -21,8 +21,8 @@ server {
 
     server_name $server_name;
 
-    ssl_certificate '/etc/letsencrypt/live/${APP_FQDN}/fullchain.pem';
-    ssl_certificate_key '/etc/letsencrypt/live/${APP_FQDN}/privkey.pem';
+    ssl_certificate '/etc/letsencrypt/live/${APP_FQDN}/localhost.crt';
+    ssl_certificate_key '/etc/letsencrypt/live/${APP_FQDN}/localhost.key';
 
     ssl_session_cache builtin:1000 shared:SSL:10m;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
