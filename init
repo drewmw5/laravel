@@ -225,6 +225,10 @@ docker() {
   && docker-compose up -d
 }
 
+link() {
+  ln -s ${pwd}src/.env ${pwd}
+}
+
 if [ ! -d "./src" ]; then
   echo ""
   echo "No src directory. Executing 'mkdir src'"
@@ -249,7 +253,7 @@ if [ -z "$(ls -A ./src)" ]; then
   fi
 fi
 
-while getopts 'acdhinps' OPTION; do
+while getopts 'acdhilnps' OPTION; do
   case "$OPTION" in
     a)
       echo "Detected artisan flag. Will run artisan commands"
@@ -281,6 +285,10 @@ while getopts 'acdhinps' OPTION; do
       echo "Detected initialization flag.  Creating default environment variables"
       init=1
       ;;
+    l)
+      echo "Detected link flag. Creating symlink to .env"
+      link=1
+      ;;
     n)
       echo "Detected NPM flag. Running npm install and npm run dev"
       npm=1
@@ -310,15 +318,10 @@ then
   composer
   npm
   artisan
+  link
   echo -e "${GREEN}Done!"
   echo ""
-  echo -e "${YELLOW}Please note that all further 'docker-compose' commands should be run from the 'src' directory to avoid any conflict with environment variables.${NOCOLOR}"
   sleep 1
-  echo ""
-  echo "Navigating to 'src' directory"
-  echo ""
-  sleep 1
-  cd ./src
   exec bash
 fi
 
