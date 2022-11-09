@@ -10,8 +10,8 @@ services:
       dockerfile: apache.dockerfile
     container_name: apache
     ports:
-      - 8080:80
-      - 8443:443
+      - ${APACHE_HTTP_IP}:80
+      - ${APACHE_HTTPS_IP}:443
     restart: always
     environment:
       APP_FQDN: ${APP_FQDN}
@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - 3306:3306
+      - ${MARIADB_IP}:3306
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -70,7 +70,7 @@ services:
     ports:
       - 3000:3000
       - 3001:3001
-      - 5173:5173
+      - ${NODE_IP}:5173
     working_dir: /var/www/html
     entrypoint: ['npm']
     networks:
@@ -96,6 +96,8 @@ services:
     restart: always
     environment:
       APP_FQDN: ${APP_FQDN}
+      HTTP_IP: ${NGINX_HTTP_IP}
+      HTTPS_IP: ${NGINX_HTTPS_IP}
     volumes:
       - ./src:/var/www/html:delegated
       - ./dockerfiles/nginx/logs:/var/log/nginx
@@ -103,8 +105,8 @@ services:
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
       - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
-      - 80:80
-      - 443:443
+      - ${NGINX_HTTP_IP}:80
+      - ${NGINX_HTTPS_IP}:443
     networks:
       - laravel
 
@@ -123,7 +125,7 @@ services:
     container_name: mailhog
     ports:
       - 1025:1025
-      - 8025:8025
+      - ${MAILHOG_IP}:8025
     networks:
       - laravel
 
@@ -134,7 +136,7 @@ services:
    depends_on:
      - mariadb
    ports:
-    - 8000:80
+    - ${PHPMYADMIN_IP}:80
    networks:
     - laravel
    environment:

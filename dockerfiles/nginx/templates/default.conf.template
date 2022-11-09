@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen ${HTTP_IP};
 
     server_name $server_name;
 
@@ -17,7 +17,7 @@ server {
 }
 
 server {
-    listen 443 ssl;
+    listen ${HTTPS_IP} ssl;
 
     server_name $server_name;
 
