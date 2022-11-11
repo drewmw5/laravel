@@ -261,12 +261,16 @@ if [ -z "$(ls -A ./src)" ]; then
   fi
 fi
 
-while getopts 'acdhilnps' OPTION; do
+while getopts 'abcdhilnps' OPTION; do
   case "$OPTION" in
     a)
       echo "Detected artisan flag. Will run artisan commands"
       artisan=1
       ;;
+    b)
+      echo "Detected bash alias flag. Concatenating alias dcr to ~./bash_aliases"
+      alias=1
+    ;;
     c)
       echo "Detected composer flag. Will run composer update"
       composer=1
