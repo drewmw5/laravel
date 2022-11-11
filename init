@@ -143,11 +143,11 @@ fresh_env () {
 
       # DB Root Password
       read -p "Define your database's root password (Default: secret) " db_root_password
-      db_root_passowrd=${db_root_passowrd:-secret}
+      db_root_password=${db_root_passowrd:-secret}
       echo "$db_root_password"
       echo ""
 
-      echo "APP_NAME=$app_name
+      echo "APP_NAME='${app_name}'
 APP_ENV=$app_env
 APP_KEY=
 APP_DEBUG=$app_debug
@@ -286,7 +286,7 @@ link() {
 }
 
 clone() {
-  read -p "URL of Laravel git repo: " repo
+  read -p "URL of Laravel git repo (Leave empty for default Laravel Install): " repo
   if ! git clone "$repo" src; then
     clone
   fi
