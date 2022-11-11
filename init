@@ -228,9 +228,11 @@ MAILHOG_IP=8025
 PHPMYADMIN_IP=8000
 " | tee src/.env
     break
+    link
     done
     else
     cp .env.example src/.env
+    link
   fi
 
 }
