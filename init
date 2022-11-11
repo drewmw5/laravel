@@ -200,6 +200,14 @@ confirm_env () {
     fi
 }
 
+alias() {
+  echo ""
+  if confirm "Would you like to add ${CYAN}alias dcr='docker-compose run --rm${NOCOLOR} to your ~/.bashrc_aliases?"
+  then
+    echo "alias dcr='docker-compose run --rm'" >>  ~/.bash_aliases
+  fi
+}
+
 artisan() {
   docker-compose run --rm artisan key:generate \
   && docker-compose run --rm artisan optimize \
