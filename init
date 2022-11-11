@@ -224,7 +224,7 @@ composer() {
 npm() {
   docker-compose run --rm npm cache clear --force \
   && docker-compose run --rm npm install \
-  && docker-compose run --rm npm run dev
+  && docker-compose run --rm npm run build
 }
 
 docker() {
