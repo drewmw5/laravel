@@ -359,7 +359,7 @@ while getopts 'abcdhilnps' OPTION; do
       ;;
     l)
       echo "Detected link flag. Creating symlink to .env"
-      link=1
+      link
       ;;
     n)
       echo "Detected NPM flag. Running npm install and npm run dev"
