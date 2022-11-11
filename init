@@ -285,6 +285,13 @@ link() {
   ln -s ${pwd}src/.env ${pwd}
 }
 
+clone() {
+  read -p "URL of Laravel git repo: " repo
+  if ! git clone "$repo" src; then
+    clone
+  fi
+}
+
 if [ ! -d "./src" ]; then
   echo ""
   echo "No src directory. Executing 'mkdir src'"
@@ -297,15 +304,20 @@ fi
 # If ./src is empty
 if [ -z "$(ls -A ./src)" ]; then
   echo ""
-  echo "It appears that ./src is empty!"
-    if confirm "Would you like to 'git clone' a Laravel project into ./src?"
+  echo -e "${YELLOW}No Laravel project detected in ./src"
+    if confirm "Would you like to 'git clone' a Laravel project into ./src?${NOCOLOR}"
+  then
+    clone
+    confirm_env
+  else
+    echo ""
+    if confirm "${YELLOW}Are you sure? Docker-compose will not work without a valid Laravel project present in ./src${NOCOLOR}"
     then
-      read -p "URL of Laravel git repo: " repo
-      git clone "$repo" src
-      confirm_env
-      echo ""
-    else
-      confirm_env
+    :
+      else
+      clone
+    fi
+    confirm_env
   fi
 fi
 
