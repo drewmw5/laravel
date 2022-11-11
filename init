@@ -295,9 +295,9 @@ clone() {
 if [ ! -d "./src" ]; then
   echo ""
   echo "No src directory. Executing 'mkdir src'"
-  sleep 1
+  echo ""
   mkdir src
-  echo "Done!"
+  echo -e "${GREEN}Done!${NOCOLOR}"
   echo ""
 fi
 
