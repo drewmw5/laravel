@@ -248,7 +248,7 @@ confirm_env () {
     fi
 }
 
-alias() {
+dcr() {
   echo ""
   if confirm "Would you like to add ${CYAN}alias dcr='docker-compose run --rm${NOCOLOR} to your ~/.bashrc_aliases?"
   then
@@ -317,7 +317,7 @@ while getopts 'abcdhilnps' OPTION; do
       ;;
     b)
       echo "Detected bash alias flag. Concatenating alias dcr to ~./bash_aliases"
-      alias=1
+      dcr=1
     ;;
     c)
       echo "Detected composer flag. Will run composer update"
