@@ -147,7 +147,7 @@ fresh_env () {
       echo "$db_root_password"
       echo ""
 
-      echo "APP_NAME=$app_name
+      echo 'APP_NAME="$app_name"
 APP_ENV=$app_env
 APP_KEY=
 APP_DEBUG=$app_debug
@@ -224,7 +224,7 @@ MARIADB_IP=3306
 MAILHOG_IP=8025
 
 PHPMYADMIN_IP=8000
-" | tee src/.env
+' | tee src/.env
     break
     link
     done
