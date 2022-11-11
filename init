@@ -261,8 +261,8 @@ artisan() {
   && docker-compose run --rm artisan optimize \
   && docker-compose run --rm artisan storage:link \
   && docker-compose run --rm artisan migrate:fresh --seed \
-  && sudo chgrp -R www-data storage bootstrap/cache \
-  && sudo chmod -R ug+rwx storage bootstrap/cache
+  && sudo chgrp -R www-data ${pwd}src/storage ${pwd}src/bootstrap/cache \
+  && sudo chmod -R ug+rwx ${pwd}src/storage ${pwd}src/bootstrap/cache
 }
 
 composer() {
@@ -276,7 +276,7 @@ npm() {
 }
 
 docker() {
-  cd src && docker-compose down --rmi 'local' -v
+  docker-compose down --rmi 'local' -v
   COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel --pull --force-rm --no-cache \
   && docker-compose up -d
 }
@@ -412,17 +412,17 @@ fi
 # Composer commands
 if [[ composer -eq 1 ]]
 then
-  cd src && composer
+  composer
 fi
 
 # NPM commands
 if [[ npm -eq 1 ]]
 then
-  cd src && npm
+  npm
 fi
 
 # Artisan commands
 if [[ artisan -eq 1 ]]
 then
-  cd src && artisan
+  artisan
 fi
