@@ -73,10 +73,10 @@ link() {
 fresh_env () {
 
   # Prompt for customization
-  echo "Do you want to customize your environment variables?"
+  echo -e "${YELLOW}Do you want to customize your environment variables?"
   echo ""
-  echo -e "If developing in a local environment (i.e. ${LIGHTCYAN}localhost${NOCOLOR}),"
-  echo "then configuration is optional"
+  echo -e "If developing in a local environment ${LIGHTCYAN}(i.e. localhost)${YELLOW},"
+  echo -e "then configuration is optional${NOCOLOR}"
   if confirm
   then
     while true; do
