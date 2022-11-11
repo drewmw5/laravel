@@ -45,6 +45,29 @@ confirm () {
     done
 }
 
+link() {
+  if [ -e "${pwd}.env" ]; then
+    echo ""
+    echo -e "${YELLOW}.env already exists, not linking"
+    echo -e "${NOCOLOR}"
+    else
+      if [ -e "${pwd}src/.env" ]; then
+        echo ""
+        echo "Linking .env..."
+        ln -s ${pwd}src/.env ${pwd}
+      else
+        echo ""
+        echo -e "${YELLOW}Could not find .env file in /src. Docker-compose will not work properly without an .env file. Are you sure you don't want to create or customize one?${NOCOLOR}"
+        if confirm
+         then
+         :
+         else
+         fresh_env
+        fi
+      fi
+  fi
+}
+
 fresh_env () {
 
   # Prompt for customization
