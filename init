@@ -22,7 +22,9 @@ WHITE='\033[1;37m'
 
 confirm () {
     while true; do
+        echo ""
         echo -e "$1"
+        echo ""
 
         read -n 1 -r -p "[Y/n] " input
 
