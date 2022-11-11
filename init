@@ -224,7 +224,7 @@ MARIADB_IP=3306
 MAILHOG_IP=8025
 
 PHPMYADMIN_IP=8000
-" | tee src/.env
+' | tee src/.env
     break
     link
     done
