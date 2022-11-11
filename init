@@ -385,13 +385,16 @@ done
 # Default option run
 if [ $OPTIND -eq 1 ];
 then
-  echo "No options were passed. Running fresh initialization"
+  echo ""
+  echo -e "${GREEN}No options were passed. Running fresh initialization${NOCOLOR}"
+  echo ""
+  link
   docker
   composer
   npm
   artisan
-  link
-  echo -e "${GREEN}Done!"
+  dcr
+  echo -e "${GREEN}Done!${NOCOLOR}"
   echo ""
   sleep 1
   exec bash
