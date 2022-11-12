@@ -287,6 +287,7 @@ link() {
 
 clone() {
   read -p "URL of Laravel git repo (Leave empty for default Laravel Install): " repo
+  repo=${repo:-'https://github.com/laravel/laravel'}
   if ! git clone "$repo" src; then
     clone
   fi
