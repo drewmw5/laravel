@@ -293,6 +293,8 @@ clone() {
   fi
 }
 
+confirm_env
+
 if [ ! -d "./src" ]; then
   echo ""
   echo "No src directory. Executing 'mkdir src'"
