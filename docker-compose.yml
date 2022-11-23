@@ -67,6 +67,7 @@ services:
       - ./src/:/var/www/html:delegated
       - ./src/storage/mysql:/var/lib/mysql
       - ./dockerfiles/localhost/:/var/www/certs
+      - ./dockerfiles/npm/logs/:/root/.npm/_logs/
     ports:
       - 3000:3000
       - 3001:3001
