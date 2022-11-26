@@ -55,6 +55,7 @@ services:
     container_name: composer
     volumes:
       - ./src/:/var/www/html
+      - ./dockerfiles/composer/packages/:/var/www/packages/
     working_dir: /var/www/html
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
@@ -86,6 +87,7 @@ services:
     container_name: artisan
     volumes:
       - ./src/:/var/www/html:delegated
+      - ./dockerfiles/composer/packages/:/var/www/packages
     depends_on:
       - mariadb
     working_dir: /var/www/html
