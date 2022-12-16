@@ -72,7 +72,7 @@ services:
       - ./dockerfiles/npm/logs/:/root/.npm/_logs/
     ports:
       - 3000:3000
-      - 3001:3001
+      - 13714:13714
       - ${NODE_IP}:5173
     working_dir: /var/www/html
     entrypoint: ['npm']
