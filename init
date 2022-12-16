@@ -250,7 +250,7 @@ confirm_env () {
 
 dcr() {
   echo ""
-  if confirm "Would you like to add ${CYAN}alias dcr='docker-compose run --rm${NOCOLOR} to your ~/.bashrc_aliases?"
+  if confirm "Would you like to add ${CYAN}alias dcr='docker-compose run --rm${NOCOLOR} to your ~/.bash_aliases?"
   then
     echo "alias dcr='docker-compose run --rm'" >>  ~/.bash_aliases
   fi
@@ -292,8 +292,6 @@ clone() {
     clone
   fi
 }
-
-confirm_env
 
 if [ ! -d "./src" ]; then
   echo ""
