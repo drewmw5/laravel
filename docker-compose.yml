@@ -84,6 +84,21 @@ services:
     networks:
       - laravel
 
+  websockets:
+    image: php:8.1.4RC1-fpm-alpine
+    restart: unless-stopped
+    ports:
+      - 6001:6001
+    volumes:
+      - ./src/:/var/www/html:delegated
+      - ./dockerfiles/localhost/:/var/www/certs
+    working_dir: /var/www/html
+    entrypoint: ["php", "artisan", "websockets:serve"]
+    depends_on:
+      - redis
+    networks:
+      - laravel
+
   artisan:
     build:
       context: ./dockerfiles
