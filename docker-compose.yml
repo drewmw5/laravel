@@ -51,7 +51,7 @@ services:
   composer:
     image: composer:latest
     volumes:
-      - ./src/:/var/www/html
+      - ./src/:/var/www/html:delegated
       - ./dockerfiles/composer/packages/:/var/www/packages/
     working_dir: /var/www/html
     entrypoint: ['composer', '--ignore-platform-reqs']
