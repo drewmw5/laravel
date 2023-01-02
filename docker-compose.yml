@@ -57,7 +57,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
       - laravel
-    user: 1000:1000
+    # user: 1000:1000
 
   npm:
     image: node:lts-alpine
@@ -74,7 +74,7 @@ services:
     entrypoint: ['npm']
     networks:
       - laravel
-    user: 1000:1000
+    # user: 1000:1000
 
   redis:
     image: redislabs/rejson:latest
@@ -96,8 +96,6 @@ services:
       - ./dockerfiles/localhost/:/var/www/certs
     working_dir: /var/www/html
     entrypoint: ["php", "artisan", "websockets:serve"]
-    depends_on:
-      - redis
     networks:
       - laravel
 
@@ -114,7 +112,7 @@ services:
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
       - laravel
-    user: 1000:1000
+    # user: 1000:1000
 
   nginx:
     image: nginx:stable-alpine
