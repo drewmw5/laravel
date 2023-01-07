@@ -23,10 +23,13 @@ services:
       - mariadb
       - composer
       - npm
+      - redis
+      - websockets
       - artisan
       - nginx
       - certbot
       - mailhog
+      - phpmyadmin
     networks:
       - laravel
 
@@ -57,7 +60,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
       - laravel
-    # user: 1000:1000
+    user: 1000:1000
 
   npm:
     image: node:lts-alpine
@@ -74,7 +77,7 @@ services:
     entrypoint: ['npm']
     networks:
       - laravel
-    # user: 1000:1000
+    user: 1000:1000
 
   redis:
     image: redislabs/rejson:latest
@@ -112,7 +115,7 @@ services:
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
       - laravel
-    # user: 1000:1000
+    user: 1000:1000
 
   nginx:
     image: nginx:stable-alpine
