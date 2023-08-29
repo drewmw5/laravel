@@ -26,10 +26,10 @@ services:
       - redis
       - websockets
       - artisan
-      - nginx
       - certbot
       - mailhog
       - phpmyadmin
+      - queue
     networks:
       - laravel
 
@@ -117,25 +117,6 @@ services:
       - laravel
     user: 1000:1000
 
-  nginx:
-    image: nginx:stable-alpine
-    restart: always
-    environment:
-      APP_FQDN: ${APP_FQDN}
-      HTTP_IP: ${NGINX_HTTP_IP}
-      HTTPS_IP: ${NGINX_HTTPS_IP}
-    volumes:
-      - ./src:/var/www/html:delegated
-      - ./dockerfiles/nginx/logs:/var/log/nginx
-      - ./dockerfiles/nginx/templates/:/etc/nginx/templates
-      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
-      - /etc/letsencrypt/:/etc/letsencrypt/
-    ports:
-      - ${NGINX_HTTP_IP}:80
-      - ${NGINX_HTTPS_IP}:443
-    networks:
-      - laravel
-
   certbot:
      image: certbot/certbot:latest
      command: certonly --webroot --webroot-path=/var/www/html/public --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d ${APP_FQDN} -v
@@ -165,3 +146,19 @@ services:
    environment:
     - PMA_ARBITRARY=1
     - PMA_HOST=mariadb
+
+  queue:
+    build:
+      context: ./dockerfiles
+      dockerfile: artisan.dockerfile
+    restart: always
+    volumes:
+      - ./src/:/var/www/html:delegated
+      - ./dockerfiles/composer/packages/:/var/www/packages
+    depends_on:
+      - mariadb
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan', 'queue:work']
+    networks:
+      - laravel
+    user: 1000:1000
