@@ -14,19 +14,22 @@ class CaptionUpdate implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $caption;
-    public string $videoId;
-    public int $index;
+    // public string $caption;
+    // public string $videoId;
+    // public int $index;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $caption, string $videoId, int $index)
+    public function __construct(
+        public string $caption, 
+        public string $videoId,
+        public int $index)
     {
-        $this->caption = $caption;
-        $this->index = $index;
-        $this->videoId = $videoId;
+        // $this->caption = $caption;
+        // $this->index = $index;
+        // $this->videoId = $videoId;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Captions;
 
-use App\Models\Captions;
+use App\Models\Caption;
 
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,7 +38,7 @@ class CreateCaption implements ShouldQueue
         $caption = $this->caption;
         $videoId = $this->videoId;
 
-        Captions::updateOrCreate([
+        Caption::updateOrCreate([
             'video_id' => $videoId,
             'text' => $caption->text,
             'start' => round($caption->start)

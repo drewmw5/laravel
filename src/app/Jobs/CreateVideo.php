@@ -26,7 +26,6 @@ class CreateVideo implements ShouldQueue, ShouldBeUnique
 
     public $playlistId = '';
     public $subtitleUpdatedAt = 0;
-    public $userId = 0;
     public $totalJobs = 0;
 
      /**
@@ -42,7 +41,7 @@ class CreateVideo implements ShouldQueue, ShouldBeUnique
      *
      * @return void
      */
-    public function __construct($snippet, $subtitleUpdatedAt, $playlistId, $userId)
+    public function __construct($snippet, $subtitleUpdatedAt, $playlistId)
     {
         $this->videoId = $snippet->resourceId->videoId;
         $this->videoTitle = $snippet->title;
@@ -51,19 +50,18 @@ class CreateVideo implements ShouldQueue, ShouldBeUnique
         $this->publishedAt = $snippet->publishedAt;
         // $this->thumbnail = $snippet->thumbnails->default->url;
         $this->playlistId = $playlistId;
-        $this->userId = $userId;
         $this->totalJobs = 0;
 
         if(isset($snippet->thumbnails->maxres)) {
-            $this->thumbnail = $snippet->thumbnails->maxres->url;
+            $this->thumbnail = $snippet->thumbnails->maxres->playlistURL;
         } elseif (isset($snippet->thumbnails->standard)) {
-            $this->thumbnail = $snippet->thumbnails->standard->url;
+            $this->thumbnail = $snippet->thumbnails->standard->playlistURL;
         } elseif (isset($snippet->thumbnails->high)) {
-            $this->thumbnail = $snippet->thumbnails->high->url;
+            $this->thumbnail = $snippet->thumbnails->high->playlistURL;
         } elseif (isset($snippet->thumbnails->medium)) {
-            $this->thumbnail = $snippet->thumbnails->medium->url;
+            $this->thumbnail = $snippet->thumbnails->medium->playlistURL;
         } else {
-            $this->thumbnail = $snippet->thumbnails->default->url;
+            $this->thumbnail = $snippet->thumbnails->default->playlistURL;
         }
 
         $this->subtitleUpdatedAt = date('Y-m-d H:i:s', $subtitleUpdatedAt);
@@ -81,7 +79,6 @@ class CreateVideo implements ShouldQueue, ShouldBeUnique
         Playlist::updateOrCreate([
             'playlist_id' => $this->playlistId,
             'video_id' => $this->videoId,
-            'user_id' => $this->userId,
         ]);
 
         Video::updateOrCreate([

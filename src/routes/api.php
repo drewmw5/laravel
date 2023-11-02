@@ -31,7 +31,7 @@ Route::get('/batch/{batchId}', function (Request $batchId) {
     return $response;
 });
 
-Route::post('/captions', [CaptionsController::class, 'store']);
-Route::get('/captions', [CaptionsController::class, 'show']);
+// Route::post('/captions', [CaptionsController::class, 'store']);
+// Route::get('/captions', [CaptionsController::class, 'show']);
 
-Route::get('/videos', [VideoController::class, 'show']);
+// Route::get('/videos', [VideoController::class, 'show']);

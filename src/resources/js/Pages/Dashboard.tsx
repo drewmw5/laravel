@@ -1,21 +1,28 @@
-import { Batch, Caption, Video } from "@/Types/types";
+import { Batch, Caption, Video as VideoType } from "@/Types/types";
 
 import Result from "@/Components/Result";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
 import { Component } from "react";
+import Video from "@/Components/Video";
 
 interface Props {
     auth: any;
+    count: number;
     errors: any;
+    totalVideos: number;
+    videos: Array<VideoType & {
+        job_batches: Batch[];
+    }>;
+    // videos?: Array<Video>;
 }
 
 interface State {
     search: string;
     resultCount: number;
     resultCountLimit: number;
-    videos?: Array<Video>;
+    videoIdUpdate: string;
     results?: Array<Caption[]>;
     jobs?: Array<Batch[]>;
 }
@@ -28,27 +35,22 @@ export default class Dashboard extends Component<Props> {
             resultCount: 1,
             resultCountLimit: 5,
             search: "",
+            videoIdUpdate: "",
         };
     }
 
     componentDidMount(): void {
         this.echo();
-        this.getJobs();
-        // setInterval(() => {
-        //     this.getJobs();
-        // }, 3000)
+        console.log(this.props)
     }
 
     echo = () => {
         const echo = window.Echo;
         echo.channel("caption").listen("CaptionUpdate", (e: any) => {
-            // const STATE = this.state;
-            // if (!STATE.videos) return;
-            // STATE.videos[e.videoId].options.jobCount = e.index + 1;
-            // this.setState(STATE);
+
         });
         echo.channel("video").listen("VideoUpdate", (e: any) => {
-            // console.log(e.videoId);
+
         });
     };
 
@@ -58,17 +60,17 @@ export default class Dashboard extends Component<Props> {
         };
 
         axios
-            .post("/api/captions", {
+            .post("/playlist", {
                 data: data,
             })
             .then((res) => {
-                let VIDEOS: any[string] = [];
-                Object.keys(res.data).forEach((value: string, index) => {
-                    VIDEOS[res.data[value].id] = res.data[value];
-                });
-                const STATE = this.state;
-                STATE.jobs = VIDEOS;
-                this.setState(STATE);
+                // let VIDEOS: any[string] = [];
+                // Object.keys(res.data).forEach((value: string, index) => {
+                //     VIDEOS[res.data[value].id] = res.data[value];
+                // });
+                // const STATE = this.state;
+                // STATE.jobs = VIDEOS;
+                // this.setState(STATE);
             });
     };
 
@@ -84,7 +86,7 @@ export default class Dashboard extends Component<Props> {
 
         if (data.search.length >= 3) {
             axios
-                .get("/api/captions", {
+                .get("/captions", {
                     params: data,
                 })
                 .then((res) => {
@@ -97,30 +99,30 @@ export default class Dashboard extends Component<Props> {
         }
     }
 
-    getVideoData() {
-        const STATE = this.state;
-        let data: string[] = [];
-        if (!STATE.results) {
-            return;
-        } else {
-            Object.keys(STATE.results).map((value, index) => {
-                data.push(value);
-            });
-        }
-        console.log(STATE.results);
+    // getVideoData() {
+    //     const STATE = this.state;
+    //     let data: string[] = [];
+    //     if (!STATE.results) {
+    //         return;
+    //     } else {
+    //         Object.keys(STATE.results).map((value, index) => {
+    //             data.push(value);
+    //         });
+    //     }
+    //     console.log(STATE.results);
 
-        axios.get(`/api/videos/`, { params: data }).then((res) => {
-            const STATE = this.state;
-            console.log(res.data);
-            res.data.forEach((element) => {
-                if (!STATE.results) return;
-                STATE.results[element.videoId].options = [];
-                STATE.results[element.videoId].options = element;
-            });
-            this.setState(STATE);
-            console.log(this.state);
-        });
-    }
+    //     axios.get(`/api/videos/`, { params: data }).then((res) => {
+    //         const STATE = this.state;
+    //         console.log(res.data);
+    //         res.data.forEach((element) => {
+    //             if (!STATE.results) return;
+    //             STATE.results[element.videoId].options = [];
+    //             STATE.results[element.videoId].options = element;
+    //         });
+    //         this.setState(STATE);
+    //         console.log(this.state);
+    //     });
+    // }
 
     getJobs() {
         axios.get("/jobs").then((res) => {
@@ -130,17 +132,29 @@ export default class Dashboard extends Component<Props> {
         });
     }
 
+    updateVideoId(id?: string) {
+        const videoId = id || this.state.videoIdUpdate;
+        axios.post('/video', {
+            videoId: videoId,
+        }).then((res) => {
+
+        })
+    }
+
     render() {
+
+                
+        console.log(this.props.videos);
         const STATE = this.state;
         console.log(STATE);
         const videos: any[] = [];
 
-        if (STATE.videos) {
-            Object.keys(STATE.videos).forEach(function (value: string, index) {
-                if (!STATE.videos) return;
-                videos.push(STATE.videos[value]);
-            });
-        }
+        // if (STATE.videos) {
+        //     Object.keys(STATE.videos).forEach(function (value: string, index) {
+        //         if (!STATE.videos) return;
+        //         videos.push(STATE.videos[value]);
+        //     });
+        // }
 
         var typingTimer: NodeJS.Timeout | undefined;
 
@@ -149,7 +163,7 @@ export default class Dashboard extends Component<Props> {
                 auth={this.props.auth}
                 error={this.props.errors}
                 header={
-                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                         Dashboard
                     </h2>
                 }
@@ -157,11 +171,11 @@ export default class Dashboard extends Component<Props> {
                 <Head title="Dashboard" />
 
                 <div className="py-12">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg w-full pr-7 mb-5">
+                    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                        <div className="w-full mb-5 overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg pr-7">
                             <input
                                 type="text"
-                                className="m-3 rounded bg-gray-900 w-full text-gray-200"
+                                className="w-full m-3 text-gray-200 bg-gray-900 rounded"
                                 placeholder="Search..."
                                 onKeyDown={() => {
                                     clearTimeout(typingTimer);
@@ -172,14 +186,14 @@ export default class Dashboard extends Component<Props> {
                                         STATE.resultCount = 1;
                                         STATE.resultCountLimit = 5;
                                         this.setState(STATE);
-                                        this.searchForCaptions(event.target.value);
+                                        this.searchForCaptions(event.currentTarget.value);
                                     }, 1000);
                                 }}
                             ></input>
                             <div className="text-white">
                                 <input
                                     type="text"
-                                    className="m-3 rounded bg-gray-900 w-auto text-gray-200"
+                                    className="w-auto m-3 text-gray-200 bg-gray-900 rounded"
                                     placeholder="Add playlist"
                                     onKeyUp={(e) => {
                                         this.setState({
@@ -199,10 +213,36 @@ export default class Dashboard extends Component<Props> {
                                 >
                                     Get Jobs
                                 </button>
+                                <input
+                                    type="text"
+                                    className="w-auto m-3 text-gray-200 bg-gray-900 rounded"
+                                    placeholder="Video Id to update"
+                                    onKeyUp={(e) => {
+                                        this.setState({
+                                            videoIdUpdate: e.currentTarget.value,
+                                        });
+                                    }}
+                                ></input>
+                                <button
+                                    className="px-4 py-2 ml-4 border rounded"
+                                    onClick={(e) => {
+                                    this.updateVideoId();
+                                }}>
+                                    Update Video
+                                </button>
+                                {this.props.count + "/" + this.props.totalVideos}
                             </div>
                         </div>
                     </div>
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 text-white">
+                    <div>
+                        {
+                            this.props.videos.map((value, index) => (
+                                // console.log(value)
+                                <Video video={value} updateVideo={this.updateVideoId.bind(this)} key={index}/>
+                            ))
+                        }
+                    </div>
+                    <div className="mx-auto text-white max-w-7xl sm:px-6 lg:px-8">
                         {!STATE.results ? (
                             <></>
                         ) : (

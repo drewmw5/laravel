@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('video_owner_channel_title');
             $table->string('published_at');
             $table->string('thumbnail');
-            $table->integer('total_jobs');
             $table->timestamp('subtitle_updated_at');
             $table->timestamps();
         });

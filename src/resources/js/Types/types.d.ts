@@ -1,15 +1,15 @@
 export interface Batch {
-    cancelledAt?: string;
-    createdAt: string;
-    failedJobs: number;
-    finishedAt?: string;
+    cancelled_at?: number;
+    created_at: number;
+    failed_jobs: number;
+    finished_at?: number;
     id: string;
     name: string;
     options: [];
-    pendingJobs: number;
-    processedJobs: number;
-    progress: number
-    totalJobs: number;
+    pending_jobs: number;
+    // processedJobs: number;
+    // progress: number
+    total_jobs: number;
 }
 
 export interface Caption {
@@ -27,8 +27,7 @@ export interface Video {
     video_owner_channel_title: string;
     published_at: string;
     thumbnail: string;
-    total_jobs: number;
     subtitle_updated_at: string;
-    created_at: string;
-    updated_at: string;
+    created_at: number;
+    updated_at: number;
 }

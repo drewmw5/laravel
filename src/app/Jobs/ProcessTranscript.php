@@ -10,13 +10,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 
 class ProcessTranscript implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $videoId = '';
+    public string $videoId = '';
 
      /**
      * The unique ID of the job.
@@ -34,6 +35,7 @@ class ProcessTranscript implements ShouldQueue, ShouldBeUnique
     public function __construct($videoId)
     {
         $this->videoId = $videoId;
+        Log::info($videoId);
     }
 
     /**
@@ -45,16 +47,18 @@ class ProcessTranscript implements ShouldQueue, ShouldBeUnique
     {
         $processOutput = '';
 
-        $process = new Process(['youtube_transcript_api', '--cookies', './cookies.txt', '--format', 'json', $this->videoId]);
+        $process = new Process(['youtube_transcript_api', '--cookies', './cookies_4.txt', '--format', 'json', "$this->videoId"]);
 
         $captureOutput = function ($type, $line) use (&$processOutput) {
             $processOutput .= $line;
+            Log::info($line);
         };
 
         $process->setTimeout(null)
             ->run($captureOutput);
 
         $processOutput = json_decode($processOutput);
+
 
         if ($processOutput === null) {
             return;

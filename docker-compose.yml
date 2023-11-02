@@ -33,6 +33,28 @@ services:
     networks:
       - laravel
 
+  nginx:
+    image: nginx:stable-alpine
+    container_name: ${APP_NAME}_nginx
+    restart: always
+    environment:
+      APP_FQDN: ${APP_FQDN}
+      APP_NAME: ${APP_NAME}
+      HTTP_IP: ${NGINX_HTTP_IP}
+      HTTPS_IP: ${NGINX_HTTPS_IP}
+    volumes:
+      - ./:/var/www/html:delegated
+      - ./dockerfiles/nginx/logs:/var/log/nginx
+      - ./dockerfiles/nginx/templates/:/etc/nginx/templates
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/${APP_FQDN}/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    ports:
+      - ${NGINX_HTTP_IP}:80
+      - ${NGINX_HTTPS_IP}:443
+    networks:
+      - laravel
+
+
   mariadb:
     image: mariadb:latest
     restart: unless-stopped
