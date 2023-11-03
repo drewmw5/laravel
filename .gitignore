@@ -17,3 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+dockerfiles/*/logs/*
+dockerfiles/redis/data/dump.rdb
+src/*
+.env
+/.vscode

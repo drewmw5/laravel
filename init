@@ -1,0 +1,432 @@
+#!/bin/bash
+
+# ----------------------------------
+# Colors
+# ----------------------------------
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTRED='\033[1;31m'
+LIGHTGREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+LIGHTBLUE='\033[1;34m'
+LIGHTPURPLE='\033[1;35m'
+LIGHTCYAN='\033[1;36m'
+WHITE='\033[1;37m'
+
+confirm () {
+    while true; do
+        echo ""
+        echo -e "$1"
+        echo ""
+
+        read -n 1 -r -p "[Y/n] " input
+
+        case $input in
+            [yY][eE][sS]|[yY])
+                echo "es"
+                echo ""
+                return 0
+                ;;
+            [nN][oO]|[nN])
+                echo "o"
+                echo ""
+                return 1
+                ;;
+            *)
+                echo "Invalid input..."
+                echo ""
+                ;;
+        esac
+    done
+}
+
+link() {
+  if [ -e "${pwd}.env" ]; then
+    echo ""
+    echo -e "${YELLOW}.env already exists, not linking"
+    echo -e "${NOCOLOR}"
+    else
+      if [ -e "${pwd}src/.env" ]; then
+        echo ""
+        echo "Linking .env..."
+        ln -s ${pwd}src/.env ${pwd}
+      else
+        echo ""
+        echo -e "${YELLOW}Could not find .env file in /src. Docker-compose will not work properly without an .env file. Are you sure you don't want to create or customize one?${NOCOLOR}"
+        if confirm
+         then
+         :
+         else
+         fresh_env
+        fi
+      fi
+  fi
+}
+
+fresh_env () {
+
+  # Prompt for customization
+  echo -e "${YELLOW}Do you want to customize your environment variables?"
+  echo ""
+  echo -e "If developing in a local environment ${LIGHTCYAN}(i.e. localhost)${YELLOW},"
+  echo -e "then configuration is optional${NOCOLOR}"
+  if confirm
+  then
+    while true; do
+
+      # Environment
+      read -p "What kind of environment are you in? (Default: local | Example: testing, production, local) " app_env
+      app_env=${app_env:-local}
+        case "$app_env" in
+          "local")
+            app_debug="true"
+            ;;
+          "production")
+            app_debug="false"
+              read -p "What is your email for Certbot SSL certificate installation? " certbot_email
+              cerbot_email=${certbot_email:-"hello@example.com"}
+              echo certbot_email
+              echo ""
+            ;;
+          "testing")
+            app_debug="true"
+            ;;
+          *)
+            app_debug="true"
+            ;;
+        esac
+      echo "$app_env"
+      echo ""
+
+      # App Name
+      read -p "What's your app's name? (Default: Laravel) " app_name
+      app_name=${app_name:-Laravel}
+      echo "$app_name"
+      echo ""
+
+      # App URL
+      read  -p "What's your app's URL? (Default: http://localhost) " app_url
+      app_url=${app_url:-"http://localhost"}
+      echo "$app_url"
+      echo ""
+
+      # App FQDN
+      read -p "What's your app's Fully Qualified Domain Name? (Example: www.google.com | Default: localhost) " app_fqdn
+      app_fqdn=${app_fqdn:-localhost}
+      echo "$app_fqdn"
+      echo ""
+
+      # DB Database
+      read -p "Define your app's database's name (Default: homestead) " db_database
+      db_database=${db_database:-homestead}
+      echo "$db_database"
+      echo ""
+
+      # DB Username
+      read -p "Define your database's username (Default: homestead) " db_username
+      db_username=${db_username:-homestead}
+      echo "$db_username"
+      echo ""
+
+      # DB Password
+      read -p "Define your database's password (Default: secret) " db_password
+      db_password=${db_password:-secret}
+      echo "$db_password"
+      echo ""
+
+      # DB Root Password
+      read -p "Define your database's root password (Default: secret) " db_root_password
+      db_root_password=${db_root_passowrd:-secret}
+      echo "$db_root_password"
+      echo ""
+
+      echo "APP_NAME='${app_name}'
+APP_ENV=$app_env
+APP_KEY=
+APP_DEBUG=$app_debug
+APP_URL=$app_url
+APP_FQDN=$app_fqdn
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+DB_CONNECTION=mysql
+DB_HOST=mariadb
+DB_PORT=3306
+DB_DATABASE=$db_database
+DB_USERNAME=$db_username
+DB_PASSWORD=$db_password
+DB_ROOT_PASSWORD=$db_root_password
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+AWS_USE_PATH_STYLE_ENDPOINT=false
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+# docker-compose
+CERTBOT_EMAIL=youremail@here.com
+
+APACHE_HTTP_IP=8080
+APACHE_HTTPS_IP=8443
+
+NGINX_HTTP_IP=80
+NGINX_HTTPS_IP=443
+
+NODE_IP=5173
+
+MARIADB_IP=3306
+
+MAILHOG_IP=8025
+
+PHPMYADMIN_IP=8000
+" | tee src/.env
+    break
+    link
+    done
+    else
+    cp .env.example src/.env
+    link
+  fi
+
+}
+
+confirm_env () {
+  # If .env doesn't exist...
+    if ! test -f "src/.env"; then
+      # If the user would like to make a new .env file
+      echo ""
+      echo ""
+      if confirm "${YELLOW}Could not locate ./src/.env. Would you like to create a fresh one?${NOCOLOR}"
+      then
+        fresh_env
+      fi
+    fi
+}
+
+dcr() {
+  echo ""
+  if confirm "Would you like to add ${CYAN}alias dcr='docker-compose run --rm${NOCOLOR} to your ~/.bash_aliases?"
+  then
+    echo "alias dcr='docker-compose run --rm'" >>  ~/.bash_aliases
+  fi
+}
+
+artisan() {
+  docker-compose run --rm artisan key:generate \
+  && docker-compose run --rm artisan optimize \
+  && docker-compose run --rm artisan storage:link \
+  && docker-compose run --rm artisan migrate:fresh --seed \
+  && sudo chgrp -R www-data ${pwd}src/storage ${pwd}src/bootstrap/cache \
+  && sudo chmod -R ug+rwx ${pwd}src/storage ${pwd}src/bootstrap/cache
+}
+
+composer() {
+  docker-compose run --rm composer update
+}
+
+npm() {
+  docker-compose run --rm npm cache clear --force \
+  && docker-compose run --rm npm install \
+  && docker-compose run --rm npm run build
+}
+
+docker() {
+  docker-compose down --rmi 'local' -v
+  COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build --parallel --pull --force-rm --no-cache \
+  && docker-compose up -d
+}
+
+link() {
+  ln -s ${pwd}src/.env ${pwd}
+}
+
+clone() {
+  read -p "URL of Laravel git repo (Leave empty for default Laravel Install): " repo
+  repo=${repo:-'https://github.com/laravel/laravel'}
+  if ! git clone "$repo" src; then
+    clone
+  fi
+}
+
+if [ ! -d "./src" ]; then
+  echo ""
+  echo "No src directory. Executing 'mkdir src'"
+  echo ""
+  mkdir src
+  echo -e "${GREEN}Done!${NOCOLOR}"
+  echo ""
+fi
+
+# If ./src is empty
+if [ -z "$(ls -A ./src)" ]; then
+  echo ""
+  echo -e "${YELLOW}No Laravel project detected in ./src"
+    if confirm "Would you like to 'git clone' a Laravel project into ./src?${NOCOLOR}"
+  then
+    clone
+    confirm_env
+  else
+    echo ""
+    if confirm "${YELLOW}Are you sure? Docker-compose will not work without a valid Laravel project present in ./src${NOCOLOR}"
+    then
+    :
+      else
+      clone
+    fi
+    confirm_env
+  fi
+fi
+
+while getopts 'abcdhilnps' OPTION; do
+  case "$OPTION" in
+    a)
+      echo "Detected artisan flag. Will run artisan commands"
+      artisan=1
+      ;;
+    b)
+      echo "Detected bash alias flag. Concatenating alias dcr to ~./bash_aliases"
+      dcr=1
+    ;;
+    c)
+      echo "Detected composer flag. Will run composer update"
+      composer=1
+      ;;
+    d)
+      echo "Detected docker flag. Will pull, build, and restart containers"
+      docker=1
+      ;;
+    h)
+      echo ""
+      echo "Detected help flag"
+      echo ""
+      echo "    Various flags include:"
+      echo "-a | Artisan flag.       | Run artisan commands"
+      echo "-c | Composer flag.      | Install composer dependencies"
+      echo "-d | Docker flag.        | Pull, build, and run containers"
+      echo "-h | Help flag.          | Display this message"
+      echo "-i | Initialization flag | Run the initialization script"
+      echo "-n | NPM flag.           | Install npm dependencies and execute npm run dev"
+      echo "-p | Production flag     | Run setup for production mode"
+      echo "-s | Skip flag           | Skip docker commands"
+      ;;
+    i)
+      echo "Detected initialization flag.  Creating default environment variables"
+      init=1
+      ;;
+    l)
+      echo "Detected link flag. Creating symlink to .env"
+      link
+      ;;
+    n)
+      echo "Detected NPM flag. Running npm install and npm run build"
+      npm=1
+      ;;
+    p)
+      echo "Detected Production flag.Setting up production environment"
+      prod=1
+      ;;
+    s)
+      echo "Detected Skip flag. Skipping running docker commands"
+      composer
+      npm
+      artisan
+      ;;
+    ?)
+      echo "script usage: $(basename \$0) [-l] [-h] [-a somevalue]" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Default option run
+if [ $OPTIND -eq 1 ];
+then
+  echo ""
+  echo -e "${GREEN}No options were passed. Running fresh initialization${NOCOLOR}"
+  echo ""
+  link
+  docker
+  composer
+  npm
+  artisan
+  dcr
+  echo -e "${GREEN}Done!${NOCOLOR}"
+  echo ""
+  sleep 1
+  exec bash
+fi
+
+# Init flag
+if [[ init -eq 1 ]]
+then
+  echo "init"
+fi
+
+# Docker commands
+if [[ docker -eq 1 ]]
+then
+  docker
+fi
+
+# Composer commands
+if [[ composer -eq 1 ]]
+then
+  composer
+fi
+
+# NPM commands
+if [[ npm -eq 1 ]]
+then
+  npm
+fi
+
+# Artisan commands
+if [[ artisan -eq 1 ]]
+then
+  artisan
+fi
