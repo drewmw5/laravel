@@ -5,6 +5,7 @@ networks:
 
 services:
   apache:
+    container_name: ${APP_NAME}_apache
     build:
       context: ./dockerfiles
       dockerfile: apache.dockerfile
@@ -15,7 +16,7 @@ services:
     environment:
       APP_FQDN: ${APP_FQDN}
     volumes:
-      - ./src/:/var/www/html:delegated
+      - ./:/var/www/html:delegated
       - ./dockerfiles/apache/logs:/var/log/apache2/
       - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
       - /etc/letsencrypt/:/etc/letsencrypt/
@@ -31,10 +32,31 @@ services:
       - mailhog
       - phpmyadmin
     networks:
-      - laravel
+    - ${APP_NAME}_network
 
+  nginx:
+    image: nginx:stable-alpine
+    container_name: ${APP_NAME}_nginx
+    restart: always
+    environment:
+      APP_FQDN: ${APP_FQDN}
+      HTTP_IP: ${NGINX_HTTP_IP}
+      HTTPS_IP: ${NGINX_HTTPS_IP}
+    volumes:
+      - ./:/var/www/html:delegated
+      - ./dockerfiles/nginx/logs:/var/log/nginx
+      - ./dockerfiles/nginx/templates/:/etc/nginx/templates
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    ports:
+      - ${NGINX_HTTP_IP}:80
+      - ${NGINX_HTTPS_IP}:443
+    networks:
+    - ${APP_NAME}_network
+  
   mariadb:
     image: mariadb:latest
+    container_name: ${APP_NAME}_mariadb
     restart: unless-stopped
     tty: true
     ports:
@@ -47,25 +69,27 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - ./src/storage/mysql/:/var/lib/mysql
+      - ./storage/mysql/:/var/lib/mysql
     networks:
-      - laravel
+    - ${APP_NAME}_network
 
   composer:
     image: composer:latest
+    container_name: ${APP_NAME}_composer
     volumes:
-      - ./src/:/var/www/html:delegated
+      - ./:/var/www/html:delegated
       - ./dockerfiles/composer/packages/:/var/www/packages/
     working_dir: /var/www/html
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
-      - laravel
+    - ${APP_NAME}_network
     user: 1000:1000
 
   npm:
     image: node:lts-alpine
+    container_name: ${APP_NAME}_npm
     volumes:
-      - ./src/:/var/www/html:delegated
+      - ./:/var/www/html:delegated
       - ./src/storage/mysql:/var/lib/mysql
       - ./dockerfiles/localhost/:/var/www/certs
       - ./dockerfiles/npm/logs/:/root/.npm/_logs/
@@ -76,92 +100,79 @@ services:
     working_dir: /var/www/html
     entrypoint: ['npm']
     networks:
-      - laravel
+    - ${APP_NAME}_network
     user: 1000:1000
 
   redis:
     image: redislabs/rejson:latest
+    container_name: ${APP_NAME}_redis
     restart: unless-stopped
     volumes:
       - ./dockerfiles/redis/data:/data
     ports:
       - "6379:6379"
     networks:
-      - laravel
+    - ${APP_NAME}_network
 
   websockets:
     image: php:8.1.4RC1-fpm-alpine
+    container_name: ${APP_NAME}_websockets
     restart: unless-stopped
     ports:
       - 6001:6001
     volumes:
-      - ./src/:/var/www/html:delegated
+      - ./:/var/www/html:delegated
       - ./dockerfiles/localhost/:/var/www/certs
     working_dir: /var/www/html
     entrypoint: ["php", "artisan", "websockets:serve"]
     networks:
-      - laravel
+    - ${APP_NAME}_network
 
   artisan:
     build:
       context: ./dockerfiles
       dockerfile: artisan.dockerfile
+    container_name: ${APP_NAME}_artisan
     volumes:
-      - ./src/:/var/www/html:delegated
+      - ./:/var/www/html:delegated
       - ./dockerfiles/composer/packages/:/var/www/packages
     depends_on:
       - mariadb
     working_dir: /var/www/html
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
-      - laravel
+    - ${APP_NAME}_network
     user: 1000:1000
-
-  nginx:
-    image: nginx:stable-alpine
-    restart: always
-    environment:
-      APP_FQDN: ${APP_FQDN}
-      HTTP_IP: ${NGINX_HTTP_IP}
-      HTTPS_IP: ${NGINX_HTTPS_IP}
-    volumes:
-      - ./src:/var/www/html:delegated
-      - ./dockerfiles/nginx/logs:/var/log/nginx
-      - ./dockerfiles/nginx/templates/:/etc/nginx/templates
-      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
-      - /etc/letsencrypt/:/etc/letsencrypt/
-    ports:
-      - ${NGINX_HTTP_IP}:80
-      - ${NGINX_HTTPS_IP}:443
-    networks:
-      - laravel
 
   certbot:
      image: certbot/certbot:latest
+     container_name: ${APP_NAME}_certbot
      command: certonly --webroot --webroot-path=/var/www/html/public --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d ${APP_FQDN} -v
      volumes:
-       - ./src/:/var/www/html:delegated
+       - ./:/var/www/html:delegated
        - /etc/letsencrypt/:/etc/letsencrypt/
        - ./dockerfiles/certbot/logs/:/var/log/letsencrypt
        - ./dockerfiles/certbot/data:/usr/share/nginx/html/letsencrypt
 
   mailhog:
     image: mailhog/mailhog:latest
+    container_name: ${APP_NAME}_mailhog
     ports:
       - 1025:1025
       - ${MAILHOG_IP}:8025
     networks:
-      - laravel
+    - ${APP_NAME}_network
 
   phpmyadmin:
    image: phpmyadmin
+   container_name: ${APP_NAME}_phpmyadmin
    restart: always
    depends_on:
      - mariadb
    ports:
     - ${PHPMYADMIN_IP}:80
    networks:
-    - laravel
+    - ${APP_NAME}_network
    environment:
     - PMA_ARBITRARY=1
     - PMA_HOST=mariadb
