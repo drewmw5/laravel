@@ -1,7 +1,8 @@
 version: '3'
 
 networks:
-  laravel:
+  default:
+    # external: true
 
 services:
   apache:
@@ -9,9 +10,9 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: apache.dockerfile
-    ports:
-      - ${APACHE_HTTP_IP}:80
-      - ${APACHE_HTTPS_IP}:443
+    expose:
+      - 80
+      - 443
     restart: always
     environment:
       APP_FQDN: ${APP_FQDN}
@@ -25,14 +26,14 @@ services:
       - composer
       - npm
       - redis
-      - websockets
       - artisan
       - nginx
       - certbot
       - mailhog
       - phpmyadmin
+      # - websockets
     networks:
-    - ${APP_NAME}_network
+      - default
 
   nginx:
     image: nginx:stable-alpine
@@ -40,8 +41,10 @@ services:
     restart: always
     environment:
       APP_FQDN: ${APP_FQDN}
+      APP_NAME: ${APP_NAME}
       HTTP_IP: ${NGINX_HTTP_IP}
       HTTPS_IP: ${NGINX_HTTPS_IP}
+      PUSHER_PORT: ${PUSHER_PORT}
     volumes:
       - ./:/var/www/html:delegated
       - ./dockerfiles/nginx/logs:/var/log/nginx
@@ -52,15 +55,15 @@ services:
       - ${NGINX_HTTP_IP}:80
       - ${NGINX_HTTPS_IP}:443
     networks:
-    - ${APP_NAME}_network
+    - default
   
   mariadb:
     image: mariadb:latest
     container_name: ${APP_NAME}_mariadb
     restart: unless-stopped
     tty: true
-    ports:
-      - ${MARIADB_IP}:3306
+    expose:
+      - 3306
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -71,7 +74,7 @@ services:
     volumes:
       - ./storage/mysql/:/var/lib/mysql
     networks:
-    - ${APP_NAME}_network
+    - default
 
   composer:
     image: composer:latest
@@ -82,7 +85,7 @@ services:
     working_dir: /var/www/html
     entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
-    - ${APP_NAME}_network
+      - default
     user: 1000:1000
 
   npm:
@@ -100,7 +103,7 @@ services:
     working_dir: /var/www/html
     entrypoint: ['npm']
     networks:
-    - ${APP_NAME}_network
+      - default
     user: 1000:1000
 
   redis:
@@ -109,24 +112,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./dockerfiles/redis/data:/data
-    ports:
-      - "6379:6379"
+    expose:
+      - 6379
     networks:
-    - ${APP_NAME}_network
-
-  websockets:
-    image: php:8.1.4RC1-fpm-alpine
-    container_name: ${APP_NAME}_websockets
-    restart: unless-stopped
-    ports:
-      - 6001:6001
-    volumes:
-      - ./:/var/www/html:delegated
-      - ./dockerfiles/localhost/:/var/www/certs
-    working_dir: /var/www/html
-    entrypoint: ["php", "artisan", "websockets:serve"]
-    networks:
-    - ${APP_NAME}_network
+      - default
 
   artisan:
     build:
@@ -141,7 +130,7 @@ services:
     working_dir: /var/www/html
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
-    - ${APP_NAME}_network
+      - default
     user: 1000:1000
 
   certbot:
@@ -158,10 +147,10 @@ services:
     image: mailhog/mailhog:latest
     container_name: ${APP_NAME}_mailhog
     ports:
-      - 1025:1025
-      - ${MAILHOG_IP}:8025
+      - 1025
+      - 8025
     networks:
-    - ${APP_NAME}_network
+      - default
 
   phpmyadmin:
    image: phpmyadmin
@@ -169,10 +158,32 @@ services:
    restart: always
    depends_on:
      - mariadb
-   ports:
-    - ${PHPMYADMIN_IP}:80
+   expose:
+    - 80
    networks:
-    - ${APP_NAME}_network
+      - default
    environment:
     - PMA_ARBITRARY=1
     - PMA_HOST=mariadb
+
+  # Websockets
+  # Disabled by default
+  # 
+  # Must uncomment nginx template
+  #
+  # Must install beyondcode/laravel-websockets
+  # composer require beyondcode/laravel-websockets
+  #
+  # websockets:
+  #   image: php:8.1.4RC1-fpm-alpine
+  #   container_name: ${APP_NAME}_websockets
+  #   restart: unless-stopped
+  #   ports:
+  #     - 6001:6001
+  #   volumes:
+  #     - ./:/var/www/html:delegated
+  #     # - ./dockerfiles/localhost/:/var/www/certs
+  #   working_dir: /var/www/html
+  #   entrypoint: ["php", "artisan", "websockets:serve"]
+  #   networks:
+  #     - default
