@@ -23,5 +23,11 @@
         "tailwindcss": "^3.2.1",
         "typescript": "^5.0.2",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "echo": "^0.1.9",
+        "laravel": "^0.0.1",
+        "laravel-echo": "^1.15.3",
+        "pusher-js": "^8.3.0"
     }
 }

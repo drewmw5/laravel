@@ -1,0 +1,20 @@
+Docker
+    - Add container to retrieve freshest cookies
+    - Update master repo 
+        + Update bash script
+    - nginx add /phpmyadmin proxy
+        + prevent redirect on login
+
+BE: 
+    - Remove CaptionUpdate from HandleCaption
+    - Update Event/VideoUpdate __construct
+    - Update CaptionsController::show removing foreach loop and using a query instead
+
+Rename folder
+
+Setup git server
+
+Check master laravel repo for errors. Bring down all containers and run default laravel docker compose
+Maybe make composer package instead 
+
+Get PHP unit testing up with docker containers
