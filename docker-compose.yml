@@ -19,7 +19,7 @@ services:
     volumes:
       - ./:/var/www/html:delegated
       - ./dockerfiles/apache/logs:/var/log/apache2/
-      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/${APP_FQDN}/
       - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - mariadb
@@ -49,7 +49,7 @@ services:
       - ./:/var/www/html:delegated
       - ./dockerfiles/nginx/logs:/var/log/nginx
       - ./dockerfiles/nginx/templates/:/etc/nginx/templates
-      - ./dockerfiles/localhost/:/etc/letsencrypt/live/localhost/
+      - ./dockerfiles/localhost/:/etc/letsencrypt/live/${APP_FQDN}/
       - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
       - ${NGINX_HTTP_IP}:80
@@ -62,8 +62,8 @@ services:
     container_name: ${APP_NAME}_mariadb
     restart: unless-stopped
     tty: true
-    expose:
-      - 3306
+    ports:
+      - 3306:3306
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -83,7 +83,7 @@ services:
       - ./:/var/www/html:delegated
       - ./dockerfiles/composer/packages/:/var/www/packages/
     working_dir: /var/www/html
-    entrypoint: ['composer', '--ignore-platform-reqs']
+    entrypoint: ['composer']
     networks:
       - default
     user: 1000:1000
@@ -112,8 +112,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./dockerfiles/redis/data:/data
-    expose:
-      - 6379
+    ports:
+      - 6379:6379
     networks:
       - default
 
@@ -176,7 +176,6 @@ services:
   #
   websockets:
     image: php:8.1.4RC1-fpm-alpine
-    container_name: ${APP_NAME}_websockets
     restart: unless-stopped
     ports:
       - 6001:6001

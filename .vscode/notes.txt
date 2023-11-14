@@ -4,11 +4,23 @@ Docker
         + Update bash script
     - nginx add /phpmyadmin proxy
         + prevent redirect on login
+    - Get debugging working
 
 BE: 
     - Remove CaptionUpdate from HandleCaption
     - Update Event/VideoUpdate __construct
     - Update CaptionsController::show removing foreach loop and using a query instead
+    - Return total number of pages from pagination
+    - Import query % LIKE % statement
+    - Add Timestamps model associated to Video model to use as tags
+        - Get timestamps from video description timeline
+
+FE: 
+    - Add play button and hover effect to image result
+    - Create previous page button
+    - New query search should reset page number
+    - Prevent overflow of pagination numbers
+    - Disable current pagination button
 
 Rename folder
 

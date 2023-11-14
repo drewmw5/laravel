@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Caption;
 use GuzzleHttp\Client as GuzzleClient;
 use App\Jobs\ProcessTranscript;
+use App\Jobs\TimelineToTags;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
@@ -122,6 +123,8 @@ class VideoController extends Controller
             $video->snippet->publishedAt,
             $this->getHighestResThumbnail($video->snippet->thumbnails)
         );
+
+        TimelineToTags::dispatch($videoId, $video->snippet->description);
 
         $batch = Bus::batch([]);
         $batch->add([

@@ -1,9 +1,14 @@
-import { AxiosInstance } from 'axios';
-import ziggyRoute, { Config as ZiggyConfig } from 'ziggy-js';
+import { AxiosInstance } from "axios";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js/types/src/core/pusher";
+import ziggyRoute, { Config as ZiggyConfig } from "ziggy-js";
 
 declare global {
     interface Window {
         axios: AxiosInstance;
+        Pusher: Pusher;
+        Echo: Echo;
+
     }
 
     interface Batch {
@@ -19,7 +24,7 @@ declare global {
         // progress: number
         total_jobs: number;
     }
-    
+
     interface Caption {
         id: number;
         video_id: string;
@@ -27,7 +32,7 @@ declare global {
         start: number;
         duration: number;
     }
-    
+
     export interface Video {
         video_id: string;
         video_title: string;
@@ -38,6 +43,15 @@ declare global {
         subtitle_updated_at: string;
         created_at: number;
         updated_at: number;
+    }
+
+    interface CaptionResponse {
+        captions: [{
+            queriedCaption: Caption;
+            prevCaption?: Caption;
+            nextCaption?: Caption;
+        }];
+        video: Video;
     }
 
     var route: typeof ziggyRoute;

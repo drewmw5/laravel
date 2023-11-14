@@ -51,7 +51,7 @@ class ProcessTranscript implements ShouldQueue, ShouldBeUnique
 
         $captureOutput = function ($type, $line) use (&$processOutput) {
             $processOutput .= $line;
-            Log::info($line);
+            // Log::info($line);
         };
 
         $process->setTimeout(null)

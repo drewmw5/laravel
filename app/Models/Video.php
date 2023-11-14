@@ -42,10 +42,4 @@ class Video extends Model
         return $videosWithJobBatches;
 
     }
-
-    public static function hasSubtitlesRatio()
-    {
-        return DB::table('captions')->distinct()->count('video_id');
-    }
-
 }

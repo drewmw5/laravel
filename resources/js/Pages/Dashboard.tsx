@@ -133,6 +133,7 @@ export default class Dashboard extends Component<Props> {
 
     updateVideoId(id?: string) {
         const videoId = id || this.state.videoIdUpdate;
+        console.log(videoId)
         axios.post('/video', {
             videoId: videoId,
         }).then((res) => {

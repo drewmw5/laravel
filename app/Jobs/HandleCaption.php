@@ -45,7 +45,7 @@ class HandleCaption implements ShouldQueue
             $this->batch()->add([
                 new CreateCaption($caption, $videoId),
             ]);
-            CaptionUpdate::dispatch($caption->text, $videoId, $index);
+            // CaptionUpdate::dispatch($caption->text, $videoId, $index);
         }
     }
 }
