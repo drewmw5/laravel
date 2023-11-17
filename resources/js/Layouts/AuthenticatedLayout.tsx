@@ -3,10 +3,14 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
-import { User } from '@/types';
+import { PageProps } from '@/types';
 
-export default function Authenticated(props: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+interface Props extends PageProps {
+    header?: ReactNode;
+    children?: ReactNode;
+}
+
+export default function Authenticated(props: Props) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     console.log(props)

@@ -5,11 +5,11 @@ import { Head } from "@inertiajs/react";
 import axios from "axios";
 import { Component } from "react";
 import Video from "@/Components/Video";
+import { PageProps } from "@/types";
 
-interface Props {
-    auth: any;
+interface Props extends PageProps {
+
     count: number;
-    errors: any;
     totalVideos: number;
     videos: Array<Video & {
         job_batches: Batch[];

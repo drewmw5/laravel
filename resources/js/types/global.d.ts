@@ -4,14 +4,14 @@ import Pusher from "pusher-js/types/src/core/pusher";
 import ziggyRoute, { Config as ZiggyConfig } from "ziggy-js";
 
 declare global {
-    interface Window {
+    export interface Window {
         axios: AxiosInstance;
         Pusher: Pusher;
         Echo: Echo;
 
     }
 
-    interface Batch {
+    export interface Batch {
         cancelled_at?: number;
         created_at: number;
         failed_jobs: number;
@@ -25,7 +25,7 @@ declare global {
         total_jobs: number;
     }
 
-    interface Caption {
+    export interface Caption {
         id: number;
         video_id: string;
         text: string;

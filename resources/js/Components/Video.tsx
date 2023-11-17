@@ -1,8 +1,6 @@
-import { Batch, Video as VideoType } from "@/Types/types";
 import React from "react";
 import SecondaryButton from "@/Components/SecondaryButton";
 
-type Video = VideoType;
 
 interface Props {
     video: Video & {
