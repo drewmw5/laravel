@@ -75,10 +75,10 @@ export default function Result(props: Props) {
     if (props.data == undefined) return;
 
     return (
-        <div className="grid grid-cols-12 m-4 bg-gray-800 p-4 rounded max-h-96">
+        <div className="grid grid-cols-12 grid-rows-2 p-4 m-4 bg-gray-800 rounded max-h-96">
             {isEmbedded ? (
+                <div className="w-full h-full col-span-5 rounded-lg aspect-video sm:col-span-12 md:col-span-5 overflow-clip md:col-start-1 md:row-start-1">
                 <iframe
-                    className="h-full w-full aspect-video rounded-lg col-span-5 sm:col-span-12 md:col-span-5 overflow-clip md:col-start-1 md:row-start-1"
                     src={`https://www.youtube.com/embed/${
                         props.data.video.video_id
                     }?start=${start - 1}&autoplay=${autoplay}`}
@@ -86,7 +86,8 @@ export default function Result(props: Props) {
                     // frameBorder="0"
                     // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
-                ></iframe>
+                    ></iframe>
+                </div>
             ) : (
                 <img
                     src={props.data.video.thumbnail}
@@ -94,10 +95,10 @@ export default function Result(props: Props) {
                     onClick={convertImgtoVid}
                 />
             )}
-            <div className="col-span-7 m-4 overflow-y-scroll pr-4 sm:col-span-12 md:col-span-7 sm:row-start-2 md:row-start-1 max-h-fit">
+            <div className="w-full h-full col-span-5 rounded-lg aspect-video sm:col-span-12 md:col-span-5 overflow-clip md:col-start-1 md:row-start-1">
                 {props.data.captions.map((value, index) => (
                     <div
-                        className="flex justify-between text-gray-300 hover:text-gray-100 my-2 cursor-pointer"
+                        className="flex justify-between my-2 text-gray-300 cursor-pointer hover:text-gray-100"
                         key={index}
                         onClick={(e) => {
                             clickTime(value.start - 2);
