@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
 use App\Models\Caption;
 use App\Models\Video;
@@ -21,8 +22,7 @@ class CaptionsController extends Controller
 {
     protected int $page;
     protected int $resultsPerPage;
-    protected array $query;
-    protected string $queryId;
+    protected string $query;
     protected array $collection;
 
 
@@ -31,15 +31,12 @@ class CaptionsController extends Controller
         if ($request->filled('query')) {
             $this->page = $request->input('page', 1);
             $this->resultsPerPage = $request->input('resultsPerPage', 10);
-            $this->query = explode(' ', $request->input('query'));
-            $this->queryId = implode('.', $this->query);
+            $this->query = $request->input('query');
         } else {
             throw new \Exception('No query');
         }
     }
-
-
-    private function render(Collection $collection)
+    private function render($collection)
     {
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
@@ -51,80 +48,34 @@ class CaptionsController extends Controller
         ]);
     }
 
-    private function getCaptions(): Collection
-    {
-        $caption = Caption::query();
-
-        foreach($this->query as $key => $value) {
-            $caption->orWhere('text', 'LIKE', '%' . $value . '%');
-        }
-
-        $caption
-        ->orderBy('video_id')
-        ->orderBy('start');
-
-        return $caption->get();
-
-    }
-
-    private function addQueriedCaptionToResults(Collection $captions): void
-    {
-        foreach ($captions as $caption) {
-            $videoId = $caption->video_id;
-            $this->collection[$videoId]['captions'][]['queriedCaption'] = $caption;
-        }
-    }
-
-    private function addPrevAndNextCaptionsToResults()
-    {
-        foreach ($this->collection as $videoId => $videos) {
-            [$this->collection[$videoId]['video']] = Video::where('video_id', '=', $videoId)
-                ->get();
-
-            foreach ($this->collection[$videoId]['captions'] as $index => $caption) {
-                $caption = $caption['queriedCaption'];
-                $nextCaption = Caption::where('video_id', '=', $caption->video_id)
-                    ->where('start', '>', $caption->start)
-                    ->orderBy('start', 'ASC')
-                    ->first();
-
-                $prevCaption = Caption::where('video_id', '=', $caption->video_id)
-                    ->where('start', '<', $caption->start)
-                    ->orderBy('start', 'DESC')
-                    ->first();
-
-                $this->collection[$videoId]['captions'][$index]['prevCaption'] = $prevCaption;
-                $this->collection[$videoId]['captions'][$index]['nextCaption'] = $nextCaption;
-            }
-        }
-    }
-
-    private function returnCollection()
-    {
-        $collection = collect($this->collection);
-
-        Cache::put($this->queryId, $collection, 900);
-
-        return $this->render($collection);
-    }
-
     public function search(Request $request)
     {
-        if (Cache::has($this->queryId)) {
-            return $this->render(Cache::get($this->queryId));
-        } else {
-
-        $captions = $this->getCaptions();
-
-        if (!$captions->count() > 0) {
-            throw new \Exception("No Captions Found");
+        $query = $request->input('query');
+        
+        if(Cache::has($query)) {
+            return $this->render(Cache::get($query));
         }
 
-        $this->addQueriedCaptionToResults($captions);
-        $this->addPrevAndNextCaptionsToResults();
+        $collection = Caption::search($query)
+            ->orderBy('id')
+            ->orderBy('start')
+            ->get();
 
-        return $this->returnCollection();
-        }
+        $collection = $collection->groupBy('video_id');
+
+        $newCollection = new Collection();
+
+        $collection->map(function ($index, $value) use (&$collection, &$newCollection) {
+            $newArray = [
+                "captions" => $collection[$value]->all(),
+                "video" => Video::where('video_id', $value)->first()
+            ];
+            $newCollection->put($value, $newArray);
+        });
+
+        Cache::put($query, $newCollection);
+
+        return $this->render($newCollection);
     }
 
     /**
