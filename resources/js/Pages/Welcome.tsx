@@ -1,11 +1,9 @@
-import { Head, useForm, useRemember, router } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import TextInput from "@/Components/TextInput";
-import PrimaryButton from "@/Components/PrimaryButton";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Result from "@/Components/Result";
 import SecondaryButton from "@/Components/SecondaryButton";
-import axios from "axios";
 
 export default function Welcome({
     auth,
@@ -23,7 +21,6 @@ export default function Welcome({
     page: number;
     pageCount: number;
 }>) {
-    console.log(pageCount);
 
     const [captions, setCaptions] = useState<Array<CaptionResponse> & { [key: string]: any }> ([]);
 
@@ -64,6 +61,7 @@ export default function Welcome({
                         let button = e.target as HTMLButtonElement;
                         setData("page", parseInt(button.value));
                     }}
+                    key={i}
                 >
                     {i}
                 </SecondaryButton>
@@ -75,8 +73,8 @@ export default function Welcome({
     return (
         <>
             <Head title="Welcome" />
-            <div className="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-                <div className="flex flex-col mb-4">
+            <div className="relative min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white grid grid-cols-12">
+                <div className="flex flex-col mb-4 sm:col-span-12 md:col-span-10 md:col-start-2">
                     <TextInput
                         type="text"
                         value={data.query}
@@ -94,7 +92,7 @@ export default function Welcome({
                     />
                     {/* <PrimaryButton onClick={}>Submit</PrimaryButton> */}
                     {Object.keys(captions)?.map((value, index) => (
-                        <Result data={captions[value]} />
+                        <Result data={captions[value]} key={index} />
                     ))}
                     <div className="flex justify-center">
                         <SecondaryButton
